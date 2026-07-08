@@ -1,0 +1,283 @@
+Create a complete high-fidelity mobile application UI/UX design project in Figma for a smart agriculture and renewable energy company called “Smart Tech Smarter Crops”.
+
+The application is an advanced IoT-powered smart farming system integrating:
+
+- Solar energy monitoring
+- Battery management
+- Soil analysis laboratory
+- Smart irrigation pumping
+- Facility monitoring
+- Environmental analytics
+- Security and connectivity systems
+
+The UI must look futuristic, premium, clean, investor-ready, and presentation-ready for LinkedIn, university defense, startup pitching, and portfolio showcasing.
+
+DESIGN STYLE:
+
+- Dark modern dashboard aesthetic
+- Futuristic smart farming interface
+- Premium enterprise-level UI
+- Glassmorphism and soft shadows
+- Smooth gradients and glowing accents
+- Rounded cards and modern layouts
+- Minimal but highly professional
+
+COLOR PALETTE:
+
+- Green: #4CAF50
+- Solar Yellow: #FFC107
+- Dark Navy: #0F172A
+- Card Background: #1E293B
+- Cyan Accent: #06B6D4
+- Success Green: #22C55E
+- Alert Red: #EF4444
+
+TYPOGRAPHY:
+
+- Headings: Poppins Bold
+- Body Text: Inter
+- Modern spacing and hierarchy
+
+APP NAME:
+Smart Tech Smarter Crops
+
+TAGLINE:
+“Powering Sustainable Agriculture Through Smart Innovation”
+
+---
+
+SCREEN 1 — SPLASH SCREEN
+
+Create a futuristic splash screen featuring:
+
+- Company logo
+- Animated glowing solar panel graphics
+- Smart agriculture illustrations
+- Dark premium background
+- Tagline under the logo
+- Smooth loading animation
+- Modern startup branding feel
+
+---
+
+SCREEN 2 — LOGIN SCREEN
+
+Design a modern login interface with:
+
+- Email and password fields
+- Biometric login button
+- “Forgot Password”
+- “Sign Up”
+- Futuristic illustrations
+- Clean glowing UI components
+
+---
+
+SCREEN 3 — SIGN UP SCREEN
+
+Include:
+
+- Full name
+- Email
+- Password
+- Confirm password
+- User role selection:
+  - Admin
+  - Technician
+  - Viewer
+- Create account button
+- Professional onboarding visuals
+
+---
+
+SCREEN 4 — MAIN DASHBOARD
+
+Create a powerful smart dashboard showing:
+
+- Solar energy generation
+- Battery percentage
+- Current power consumption
+- Pump status
+- Soil moisture levels
+- Weather summary
+- Temperature and humidity
+- Active system alerts
+- Live analytics cards
+- Interactive graphs
+- Floating action buttons
+- Modern IoT dashboard design
+
+---
+
+SCREEN 5 — ENERGY MANAGEMENT
+
+Design a solar and battery monitoring page including:
+
+- Solar panel output graphs
+- Battery charging status
+- Voltage and current indicators
+- Energy production analytics
+- Consumption tracking
+- Daily/weekly/monthly charts
+- System efficiency indicators
+- Smart alert cards
+
+---
+
+SCREEN 6 — SOIL ANALYSIS LAB
+
+Create a smart soil monitoring screen showing:
+
+- Soil pH levels
+- Moisture content
+- Nitrogen levels
+- Potassium levels
+- Phosphorus levels
+- AI crop recommendations
+- Fertilizer suggestions
+- Interactive analytics charts
+- Soil health scoring
+- Download report button
+
+---
+
+SCREEN 7 — PUMP CONTROL SYSTEM
+
+Design an irrigation control screen featuring:
+
+- Large ON/OFF smart switch
+- Water flow status
+- Pump runtime timer
+- Smart irrigation scheduling
+- Rule automation settings
+- Moisture-trigger activation
+- Automation timeline
+- Live activity logs
+- Animated water flow effects
+
+---
+
+SCREEN 8 — FACILITY MONITORING
+
+Create a facility monitoring interface including:
+
+- Control room temperature
+- Humidity monitoring
+- Store room analytics
+- Device monitoring cards
+- Security system indicators
+- Environmental charts
+- Equipment status tracking
+- Real-time alerts
+
+---
+
+SCREEN 9 — USER ACCESS CONTROL
+
+Design a user management screen with:
+
+- User profiles
+- Access permissions
+- Role management
+- Admin controls
+- Security logs
+- Device access history
+- Modern enterprise management UI
+
+---
+
+SCREEN 10 — CONNECTIVITY SETTINGS
+
+Create a settings screen including:
+
+- Wi-Fi setup
+- Bluetooth pairing
+- GSM connection status
+- Offline synchronization status
+- Notification preferences
+- Theme switching
+- Language settings
+- Device pairing interface
+
+---
+
+SCREEN 11 — NOTIFICATION CENTER
+
+Design a smart alerts page featuring:
+
+- Low battery warnings
+- Pump failure alerts
+- Soil moisture warnings
+- Sensor disconnection alerts
+- Overheating notifications
+- Real-time push notification cards
+- Priority color coding
+
+---
+
+SCREEN 12 — ANALYTICS & REPORTS
+
+Create a professional analytics screen showing:
+
+- Energy efficiency reports
+- Soil trend analysis
+- Water usage analytics
+- Performance KPIs
+- Export report buttons
+- Interactive charts
+- Monthly comparison graphs
+
+---
+
+SCREEN 13 — LINKEDIN PRESENTATION MOCKUP
+
+Create professional presentation mockups featuring:
+
+- Mobile phone device frames
+- Floating application screens
+- Dark futuristic background
+- Startup branding presentation
+- LinkedIn portfolio showcase layout
+- Investor pitch style visuals
+- Behance-style UI presentation
+
+---
+
+SCREEN 14 — DESIGN SYSTEM
+
+Create a full Figma design system including:
+
+- Buttons
+- Input fields
+- Navigation bars
+- Cards
+- Typography hierarchy
+- Icon system
+- Color system
+- Auto-layout components
+- Reusable UI components
+- Smart variants
+
+ADDITIONAL REQUIREMENTS:
+
+- Use realistic IoT dashboards
+- Add premium modern animations
+- Use futuristic agricultural icons
+- Include smooth navigation flows
+- Make the application production-ready
+- Ensure Android and iOS compatibility
+- Create a highly polished professional startup appearance
+- Add advanced charts and analytics
+- Use realistic smart farming visuals
+- Ensure strong visual consistency
+
+FINAL OUTPUT:
+Generate a complete Figma-ready mobile app UI/UX project prototype suitable for:
+
+- University project presentation
+- Startup investor pitching
+- LinkedIn portfolio showcase
+- Behance case study
+- Professional UI/UX presentation
+
+The final result should look like a real-world billion-dollar smart agriculture technology platform.
