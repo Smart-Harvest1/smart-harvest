@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { User, Mail, Lock, Sprout, Shield } from 'lucide-react';
 import { motion } from 'motion/react';
+import { post, setToken } from '../lib/api';
 
 export default function SignUpScreen() {
   const navigate = useNavigate();
@@ -13,9 +14,30 @@ export default function SignUpScreen() {
     role: 'viewer',
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    navigate('/app');
+    setError(null);
+    setLoading(true);
+    try {
+      const data = await post('/api/auth/signup', {
+        fullName: formData.fullName,
+        email: formData.email,
+        password: formData.password,
+        role: formData.role,
+      });
+
+      if (data.token) {
+        setToken(data.token);
+      }
+      navigate('/app');
+    } catch (err: any) {
+      setError(err?.error || err?.message || 'Signup failed');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -116,10 +138,12 @@ export default function SignUpScreen() {
 
             <button
               type="submit"
-              className="w-full bg-gradient-to-r from-[#4CAF50] to-[#22C55E] text-white rounded-xl py-3.5 font-semibold shadow-lg shadow-green-500/30 hover:shadow-green-500/50 hover:scale-[1.02] transition-all duration-200 mt-6"
+              disabled={loading}
+              className="w-full bg-gradient-to-r from-[#4CAF50] to-[#22C55E] text-white rounded-xl py-3.5 font-semibold shadow-lg shadow-green-500/30 hover:shadow-green-500/50 hover:scale-[1.02] transition-all duration-200 mt-6 disabled:opacity-60"
             >
-              Create Account
+              {loading ? 'Creating...' : 'Create Account'}
             </button>
+            {error && <p className="text-center text-sm text-red-400 mt-2">{error}</p>}
           </form>
 
           <p className="text-center text-[#94a3b8] mt-6">

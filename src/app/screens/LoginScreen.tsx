@@ -2,15 +2,29 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Mail, Lock, Fingerprint, Sprout } from 'lucide-react';
 import { motion } from 'motion/react';
+import { post, setToken } from '../lib/api';
 
 export default function LoginScreen() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLogin = (e: React.FormEvent) => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    navigate('/app');
+    setError(null);
+    setLoading(true);
+    try {
+      const data = await post('/api/auth/login', { email, password });
+      if (data.token) setToken(data.token);
+      navigate('/app');
+    } catch (err: any) {
+      setError(err?.error || err?.message || 'Login failed');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -76,10 +90,12 @@ export default function LoginScreen() {
 
             <button
               type="submit"
-              className="w-full bg-gradient-to-r from-[#4CAF50] to-[#22C55E] text-white rounded-xl py-3.5 font-semibold shadow-lg shadow-green-500/30 hover:shadow-green-500/50 hover:scale-[1.02] transition-all duration-200"
+              disabled={loading}
+              className="w-full bg-gradient-to-r from-[#4CAF50] to-[#22C55E] text-white rounded-xl py-3.5 font-semibold shadow-lg shadow-green-500/30 hover:shadow-green-500/50 hover:scale-[1.02] transition-all duration-200 disabled:opacity-60"
             >
-              Sign In
+              {loading ? 'Signing in...' : 'Sign In'}
             </button>
+            {error && <p className="text-center text-sm text-red-400 mt-2">{error}</p>}
 
             <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">
