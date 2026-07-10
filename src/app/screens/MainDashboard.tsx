@@ -1,5 +1,7 @@
 import { Sun, Battery, Zap, Droplets, ThermometerSun, CloudRain, AlertTriangle, TrendingUp } from 'lucide-react';
 import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { useEffect, useState } from 'react';
+import { fetchStats } from '../lib/api';
 
 const energyData = [
   { time: '00:00', solar: 0, battery: 85 },
@@ -20,6 +22,23 @@ const soilData = [
 ];
 
 export default function MainDashboard() {
+  const [stats, setStats] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let mounted = true;
+    fetchStats()
+      .then((d) => { if (mounted) setStats(d); })
+      .catch(() => {})
+      .finally(() => { if (mounted) setLoading(false); });
+    return () => { mounted = false; };
+  }, []);
+
+  const solarPower = stats?.solarPower ?? '4.2 kW';
+  const batteryLevel = stats?.batteryLevel ?? 85;
+  const soilMoisture = stats?.soilMoisture ?? 72;
+  const alertsCount = stats?.alertsCount ?? (stats ? stats.alertsCount : 2);
+
   return (
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
@@ -42,7 +61,7 @@ export default function MainDashboard() {
             <span className="text-xs px-2 py-1 bg-green-500/20 text-green-400 rounded-full">Live</span>
           </div>
           <h3 className="text-[#94a3b8] text-sm mb-1">Solar Power</h3>
-          <p className="text-3xl font-bold text-white mb-1">4.2 kW</p>
+          <p className="text-3xl font-bold text-white mb-1">{solarPower}</p>
           <div className="flex items-center gap-1 text-green-400 text-sm">
             <TrendingUp className="w-4 h-4" />
             <span>+12% today</span>
@@ -54,10 +73,10 @@ export default function MainDashboard() {
             <div className="p-3 bg-[#4CAF50]/20 rounded-xl">
               <Battery className="w-6 h-6 text-[#4CAF50]" />
             </div>
-            <span className="text-xs px-2 py-1 bg-green-500/20 text-green-400 rounded-full">85%</span>
+            <span className="text-xs px-2 py-1 bg-green-500/20 text-green-400 rounded-full">{batteryLevel}%</span>
           </div>
           <h3 className="text-[#94a3b8] text-sm mb-1">Battery Level</h3>
-          <p className="text-3xl font-bold text-white mb-1">85%</p>
+          <p className="text-3xl font-bold text-white mb-1">{batteryLevel}%</p>
           <div className="w-full bg-white/10 rounded-full h-2 mt-2">
             <div className="bg-gradient-to-r from-[#4CAF50] to-[#22C55E] h-2 rounded-full" style={{ width: '85%' }}></div>
           </div>
@@ -71,7 +90,7 @@ export default function MainDashboard() {
             <span className="text-xs px-2 py-1 bg-cyan-500/20 text-cyan-400 rounded-full">Active</span>
           </div>
           <h3 className="text-[#94a3b8] text-sm mb-1">Soil Moisture</h3>
-          <p className="text-3xl font-bold text-white mb-1">72%</p>
+          <p className="text-3xl font-bold text-white mb-1">{soilMoisture}%</p>
           <p className="text-sm text-[#94a3b8]">Optimal range</p>
         </div>
 
@@ -80,10 +99,10 @@ export default function MainDashboard() {
             <div className="p-3 bg-[#EF4444]/20 rounded-xl">
               <AlertTriangle className="w-6 h-6 text-[#EF4444]" />
             </div>
-            <span className="text-xs px-2 py-1 bg-red-500/20 text-red-400 rounded-full">2 Active</span>
+            <span className="text-xs px-2 py-1 bg-red-500/20 text-red-400 rounded-full">{alertsCount} Active</span>
           </div>
           <h3 className="text-[#94a3b8] text-sm mb-1">Alerts</h3>
-          <p className="text-3xl font-bold text-white mb-1">2</p>
+          <p className="text-3xl font-bold text-white mb-1">{alertsCount}</p>
           <p className="text-sm text-[#94a3b8]">Requires attention</p>
         </div>
       </div>

@@ -34,3 +34,7 @@ export async function fetchWithAuth(path: string, opts: RequestInit = {}) {
   if (!res.ok) throw data;
   return data;
 }
+
+export async function fetchStats() {
+  return fetchWithAuth('/api/stats');
+}
