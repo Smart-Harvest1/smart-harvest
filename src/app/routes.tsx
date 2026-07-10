@@ -1,16 +1,17 @@
+import { lazy, Suspense } from 'react';
 import { createBrowserRouter } from "react-router";
 import SplashScreen from "./screens/SplashScreen";
 import LoginScreen from "./screens/LoginScreen";
 import SignUpScreen from "./screens/SignUpScreen";
-import MainDashboard from "./screens/MainDashboard";
-import EnergyManagement from "./screens/EnergyManagement";
-import SoilAnalysisLab from "./screens/SoilAnalysisLab";
-import PumpControlSystem from "./screens/PumpControlSystem";
-import FacilityMonitoring from "./screens/FacilityMonitoring";
-import UserAccessControl from "./screens/UserAccessControl";
-import ConnectivitySettings from "./screens/ConnectivitySettings";
-import NotificationCenter from "./screens/NotificationCenter";
-import AnalyticsReports from "./screens/AnalyticsReports";
+const MainDashboard = lazy(() => import("./screens/MainDashboard"));
+const EnergyManagement = lazy(() => import("./screens/EnergyManagement"));
+const SoilAnalysisLab = lazy(() => import("./screens/SoilAnalysisLab"));
+const PumpControlSystem = lazy(() => import("./screens/PumpControlSystem"));
+const FacilityMonitoring = lazy(() => import("./screens/FacilityMonitoring"));
+const UserAccessControl = lazy(() => import("./screens/UserAccessControl"));
+const ConnectivitySettings = lazy(() => import("./screens/ConnectivitySettings"));
+const NotificationCenter = lazy(() => import("./screens/NotificationCenter"));
+const AnalyticsReports = lazy(() => import("./screens/AnalyticsReports"));
 import AppLayout from "./components/AppLayout";
 
 export const router = createBrowserRouter([
@@ -28,7 +29,11 @@ export const router = createBrowserRouter([
   },
   {
     path: "/app",
-    element: <AppLayout />,
+    element: (
+      <Suspense fallback={<div style={{ padding: '20px', textAlign: 'center' }}>Loading Farm Dashboard...</div>}>
+        <AppLayout />
+      </Suspense>
+    ),
     children: [
       { index: true, element: <MainDashboard /> },
       { path: "energy", element: <EnergyManagement /> },
