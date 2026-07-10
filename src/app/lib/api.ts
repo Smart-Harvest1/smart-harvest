@@ -20,6 +20,10 @@ export function getToken() {
   try { return localStorage.getItem('sh_token'); } catch { return null; }
 }
 
+export function clearToken() {
+  try { localStorage.removeItem('sh_token'); } catch {}
+}
+
 export async function fetchWithAuth(path: string, opts: RequestInit = {}) {
   const token = getToken();
   const headers = { ...(opts.headers as Record<string,string> || {}), 'Content-Type': 'application/json' };

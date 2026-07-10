@@ -1,6 +1,7 @@
 import { Outlet, useNavigate, useLocation } from 'react-router';
 import { LayoutDashboard, Zap, Beaker, Droplets, Building2, Users, Settings, Bell, BarChart3, Menu, X } from 'lucide-react';
 import { useState } from 'react';
+import { clearToken } from '../lib/api';
 
 const navigation = [
   { name: 'Dashboard', path: '/app', icon: LayoutDashboard },
@@ -56,6 +57,17 @@ export default function AppLayout() {
               );
             })}
           </nav>
+          <div className="p-4 border-t border-white/10">
+            <button
+              onClick={() => {
+                clearToken();
+                navigate('/login');
+              }}
+              className="w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl text-white bg-red-600 hover:bg-red-700 transition-colors"
+            >
+              Logout
+            </button>
+          </div>
         </div>
       </aside>
 
@@ -75,6 +87,25 @@ export default function AppLayout() {
           >
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
+        </header>
+
+        {/* Desktop header with logout */}
+        <header className="hidden lg:flex items-center justify-between px-6 py-4 bg-[#0b1220] border-b border-white/5">
+          <div>
+            <h1 className="text-lg font-bold text-white">Smart Crops</h1>
+            <p className="text-xs text-[#94a3b8]">IoT Agriculture</p>
+          </div>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => {
+                clearToken();
+                navigate('/login');
+              }}
+              className="text-sm text-white bg-red-600 hover:bg-red-700 px-3 py-1 rounded-md transition-colors"
+            >
+              Logout
+            </button>
+          </div>
         </header>
 
         <main className="flex-1 overflow-auto">
