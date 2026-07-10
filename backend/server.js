@@ -5,6 +5,7 @@ import authRoutes from './src/routes/auth.js';
 import userRoutes from './src/routes/users.js';
 import actionRoutes from './src/routes/actions.js';
 import statsRoutes from './src/routes/stats.js';
+import telemetryRoutes from './src/routes/telemetry.js';
 import errorHandler from './src/middleware/errorHandler.js';
 
 dotenv.config();
@@ -23,6 +24,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/actions', actionRoutes);
 app.use('/api/stats', statsRoutes);
+app.use('/api/telemetry', telemetryRoutes);
 
 app.use(errorHandler);
 
