@@ -36,15 +36,14 @@
   - This repository contains both frontend and backend. The backend uses Prisma and expects a database configured in `backend/.env` under `DATABASE_URL`.
   - For local development the project was tested with a MySQL database on `127.0.0.1:3306` and a root account that had no password. If your MySQL requires a password, encode special characters in the URL (e.g. `@` -> `%40`).
   - To seed an initial admin user, set `ADMIN_EMAIL`, `ADMIN_PASSWORD`, and `ADMIN_NAME` in `backend/.env` before running `node prisma/seed.js`.
-  - To seed an initial admin user, set `ADMIN_EMAIL`, `ADMIN_PASSWORD`, and `ADMIN_NAME` in `backend/.env` before running `node prisma/seed.js`.
 
 Making the database accessible locally (optional)
 
-- If you need to allow remote/local connections to your MySQL server so other machines can connect, do these steps on the machine running MySQL:
+- If you need local or remote access to your MySQL server, do these steps on the machine running MySQL:
 
-  1. Edit your MySQL config (my.ini or my.cnf) and set `bind-address = 0.0.0.0` to allow external TCP connections. Restart the MySQL service after changing it.
+  1. If you want external access, edit your MySQL config (my.ini or my.cnf) and set `bind-address = 0.0.0.0`. Restart the MySQL service after changing it.
 
-  2. Create a dedicated DB user for the app and grant privileges. A helper PowerShell script is included at `backend/scripts/create_remote_user.ps1`. Edit the variables inside (`$appUser`, `$appPass`) and run the script as Administrator:
+  2. Create a dedicated DB user for the app and grant privileges. A helper PowerShell script is included at `backend/scripts/create_remote_user.ps1`. It now creates `smart_user` for both `127.0.0.1` and `localhost`, which enables local backend access. Edit the variables inside (`$appUser`, `$appPass`, and optionally `$adminPass`) and run the script as Administrator:
 
       ```powershell
       cd backend\scripts
@@ -54,7 +53,7 @@ Making the database accessible locally (optional)
   3. Update `backend/.env` with the new `DATABASE_URL`, encoding any special characters in the password (for example `@` → `%40`). Example:
 
       ```env
-      DATABASE_URL="mysql://smart_user:YourP%40ss@1@1.2.3.4:3306/smart_harvest"
+      DATABASE_URL="mysql://smart_user:YourP%40ss@127.0.0.1:3306/smart_harvest"
       ```
 
   Notes:

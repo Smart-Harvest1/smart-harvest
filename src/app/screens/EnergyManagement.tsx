@@ -1,34 +1,40 @@
 import { Sun, Battery, Zap, TrendingUp, ArrowDown, ArrowUp } from 'lucide-react';
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
-const hourlyData = [
-  { hour: '00', production: 0, consumption: 0.5 },
-  { hour: '04', production: 0, consumption: 0.3 },
-  { hour: '08', production: 3.2, consumption: 1.8 },
-  { hour: '12', production: 4.5, consumption: 2.1 },
-  { hour: '16', production: 3.8, consumption: 2.5 },
-  { hour: '20', production: 0.5, consumption: 1.5 },
-];
+const hours = ['00', '04', '08', '12', '16', '20'];
 
-const weeklyData = [
-  { day: 'Mon', energy: 32 },
-  { day: 'Tue', energy: 35 },
-  { day: 'Wed', energy: 30 },
-  { day: 'Thu', energy: 38 },
-  { day: 'Fri', energy: 36 },
-  { day: 'Sat', energy: 34 },
-  { day: 'Sun', energy: 37 },
-];
+const hourlyData = hours.map((hour, index) => {
+  const production = Math.max(0, 5 - Math.abs(index - 3) * 1.1);
+  const consumption = 1 + Math.sin(index / 1.5) * 0.4 + index * 0.25;
+  return { hour, production: Number(production.toFixed(1)), consumption: Number(consumption.toFixed(1)) };
+});
 
-const distributionData = [
+const weeklyData = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, index) => ({
+  day,
+  energy: Math.round(32 + index * 1.8 + Math.cos(index / 1.4) * 2),
+}));
+
+const distributionBase = [
   { name: 'Pump System', value: 45, color: '#06B6D4' },
   { name: 'Monitoring', value: 25, color: '#4CAF50' },
   { name: 'Facility', value: 20, color: '#FFC107' },
   { name: 'Other', value: 10, color: '#94a3b8' },
 ];
+const distributionTotal = distributionBase.reduce((sum, item) => sum + item.value, 0);
+const distributionData = distributionBase.map((item) => ({
+  ...item,
+  percent: Math.round((item.value / distributionTotal) * 100),
+}));
+
+const totalProduction = hourlyData.reduce((sum, item) => sum + item.production, 0);
+const totalConsumption = hourlyData.reduce((sum, item) => sum + item.consumption, 0);
+const avgConsumption = hourlyData.length ? totalConsumption / hourlyData.length : 0;
+const peakProduction = hourlyData.length ? Math.max(...hourlyData.map((item) => item.production)) : 0;
+const netBalance = Number((totalProduction - totalConsumption).toFixed(1));
+const costSaved = Number((netBalance * 0.55).toFixed(2));
+const productionChange = hourlyData.length > 1 ? Math.round(((hourlyData[hourlyData.length - 1].production - hourlyData[0].production) / Math.max(hourlyData[0].production, 1)) * 100) : 0;
 
 export default function EnergyManagement() {
-  return (
     <div className="p-6 space-y-6">
       <div>
         <h1 className="text-3xl font-bold text-white mb-1">Energy Management</h1>

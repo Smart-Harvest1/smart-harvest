@@ -12,6 +12,7 @@ import ConnectivitySettings from "./screens/ConnectivitySettings";
 import NotificationCenter from "./screens/NotificationCenter";
 import AnalyticsReports from "./screens/AnalyticsReports";
 import AppLayout from "./components/AppLayout";
+import TelemetryAdmin from "./screens/TelemetryAdmin";
 
 export const router = createBrowserRouter([
   {
@@ -39,6 +40,7 @@ export const router = createBrowserRouter([
       { path: "settings", element: <ConnectivitySettings /> },
       { path: "notifications", element: <NotificationCenter /> },
       { path: "analytics", element: <AnalyticsReports /> },
+      { path: "telemetry", element: <TelemetryAdmin /> },
     ],
   },
 ]);

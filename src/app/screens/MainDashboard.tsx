@@ -1,43 +1,119 @@
 import { Sun, Battery, Zap, Droplets, ThermometerSun, CloudRain, AlertTriangle, TrendingUp } from 'lucide-react';
 import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { useEffect, useState } from 'react';
-import { fetchStats } from '../lib/api';
+import { fetchStats, fetchTelemetry } from '../lib/api';
 
-const energyData = [
-  { time: '00:00', solar: 0, battery: 85 },
-  { time: '06:00', solar: 20, battery: 75 },
-  { time: '12:00', solar: 95, battery: 90 },
-  { time: '18:00', solar: 45, battery: 88 },
-  { time: '23:00', solar: 0, battery: 82 },
-];
+const fallbackEnergyData: Array<{ time: string; solar: number; battery: number }> = ['00', '04', '08', '12', '16', '20'].map((time, index) => {
+  const solar = Math.max(0, 5 - Math.abs(index - 3) * 1.2);
+  const battery = Math.max(20, 70 + (index - 3) * 4);
+  return { time, solar: Number(solar.toFixed(1)), battery: Number(battery.toFixed(0)) };
+});
 
-const soilData = [
-  { day: 'Mon', moisture: 65 },
-  { day: 'Tue', moisture: 70 },
-  { day: 'Wed', moisture: 62 },
-  { day: 'Thu', moisture: 68 },
-  { day: 'Fri', moisture: 72 },
-  { day: 'Sat', moisture: 75 },
-  { day: 'Sun', moisture: 70 },
-];
+const fallbackSoilData: Array<{ day: string; moisture: number }> = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, index) => {
+  const moisture = 60 + Math.sin(index / 2) * 6 + index * 2;
+  return { day, moisture: Number(Math.round(moisture)) };
+});
+
+const parseTelemetryValue = (value: any, fallback = 0) => {
+  if (typeof value === 'number') return value;
+  if (typeof value === 'string' && value.trim() !== '') {
+    const numeric = Number(value);
+    return Number.isFinite(numeric) ? numeric : fallback;
+  }
+  return fallback;
+};
 
 export default function MainDashboard() {
   const [stats, setStats] = useState<any>(null);
+  const [telemetry, setTelemetry] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let mounted = true;
-    fetchStats()
-      .then((d) => { if (mounted) setStats(d); })
+    Promise.all([fetchStats(), fetchTelemetry().catch(() => [] as any)])
+      .then(([s, t]) => {
+        if (!mounted) return;
+        setStats(s);
+        setTelemetry(t);
+      })
       .catch(() => {})
       .finally(() => { if (mounted) setLoading(false); });
     return () => { mounted = false; };
   }, []);
 
-  const solarPower = stats?.solarPower ?? '4.2 kW';
-  const batteryLevel = stats?.batteryLevel ?? 85;
-  const soilMoisture = stats?.soilMoisture ?? 72;
+  const latestByKey = telemetry.reduce((acc: any, item: any) => {
+    const key = item.key || 'unknown';
+    if (!acc[key] || new Date(item.createdAt) > new Date(acc[key].createdAt)) {
+      acc[key] = item;
+    }
+    return acc;
+  }, {} as Record<string, any>);
+
+  const rawSolar = latestByKey.solar?.value ?? latestByKey.solar?.value ?? null;
+  const rawBattery = latestByKey.battery?.value ?? null;
+  const rawMoisture = latestByKey.moisture?.value ?? latestByKey.soil?.value ?? null;
+  const batteryFallback = stats?.batteryLevel ?? (typeof rawBattery === 'number' ? rawBattery : Number(rawBattery) || 85);
+  const soilMoistureFallback = stats?.soilMoisture ?? (typeof rawMoisture === 'number' ? rawMoisture : Number(rawMoisture) || 72);
   const alertsCount = stats?.alertsCount ?? (stats ? stats.alertsCount : 2);
+
+  const temperatureValue = latestByKey.temperature?.value ?? latestByKey.temp?.value ?? 28;
+  const humidityValue = latestByKey.humidity?.value ?? latestByKey.moisture?.value ?? 65;
+  const pumpStatus = latestByKey.pump_status?.value ?? latestByKey.pumpStatus?.value ?? 'Active';
+  const temperatureText = typeof temperatureValue === 'number' ? `${temperatureValue}°C` : String(temperatureValue);
+  const humidityText = typeof humidityValue === 'number' ? `${humidityValue}%` : String(humidityValue);
+
+  let energyData = fallbackEnergyData;
+  let soilData = fallbackSoilData;
+  if (telemetry && telemetry.length) {
+    const byKey = telemetry.reduce((acc: any, t: any) => {
+      const k = t.key || 'unknown';
+      let v = t.value;
+      try { if (typeof v === 'string') v = JSON.parse(v); } catch {}
+      acc[k] = acc[k] || [];
+      acc[k].push({ value: v, createdAt: t.createdAt });
+      return acc;
+    }, {} as Record<string, any[]>);
+
+    const sortByDate = (items: any[]) => items.slice().sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+    const solarSeries = sortByDate(byKey.solar || []);
+    const batterySeries = sortByDate(byKey.battery || []);
+
+    if (solarSeries.length || batterySeries.length) {
+      const times = new Set<string>();
+      solarSeries.forEach((s: any) => times.add(new Date(s.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })));
+      batterySeries.forEach((s: any) => times.add(new Date(s.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })));
+      energyData = Array.from(times).sort().map((time) => {
+        const s = solarSeries.find((x: any) => new Date(x.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) === time);
+        const b = batterySeries.find((x: any) => new Date(x.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) === time);
+        const solarValue = s ? parseTelemetryValue(s.value, 0) : 0;
+        const batteryValue = b ? parseTelemetryValue(b.value, batteryFallback) : batteryFallback;
+        return {
+          time,
+          solar: Number(solarValue.toFixed ? solarValue.toFixed(1) : solarValue) as number,
+          battery: Number(batteryValue.toFixed ? batteryValue.toFixed(0) : batteryValue) as number,
+        };
+      });
+    }
+
+    const moistureSeries = sortByDate(byKey.moisture || byKey.soil || []);
+    if (moistureSeries.length) {
+      soilData = moistureSeries.map((m: any) => ({
+        day: new Date(m.createdAt).toLocaleDateString([], { weekday: 'short' }),
+        moisture: parseTelemetryValue(m.value, soilMoistureFallback),
+      }));
+    }
+  }
+
+  const totalSolar = energyData.reduce((sum, point) => sum + (typeof point.solar === 'number' ? point.solar : 0), 0);
+  const totalBattery = energyData.reduce((sum, point) => sum + (typeof point.battery === 'number' ? point.battery : 0), 0);
+  const avgSolar = energyData.length ? totalSolar / energyData.length : 0;
+  const avgBattery = energyData.length ? totalBattery / energyData.length : batteryFallback;
+  const peakSolar = energyData.length ? Math.max(...energyData.map((point) => point.solar)) : 0;
+  const solarPower = stats?.solarPower ?? (latestByKey.solar ? `${parseTelemetryValue(latestByKey.solar.value, avgSolar).toFixed(1)} kW` : `${avgSolar.toFixed(1)} kW`);
+  const batteryLevelValue = stats?.batteryLevel ?? Math.round(avgBattery);
+  const soilMoistureValue = stats?.soilMoisture ?? Math.round(soilData.length ? soilData.reduce((sum, point) => sum + point.moisture, 0) / soilData.length : soilMoistureFallback);
+  const batteryLevel = batteryLevelValue;
+  const soilMoisture = soilMoistureValue;
 
   return (
     <div className="p-6 space-y-6">
@@ -157,7 +233,7 @@ export default function MainDashboard() {
         <div className="bg-[#1E293B] rounded-2xl p-6 border border-white/10">
           <div className="flex items-center justify-between mb-4">
             <ThermometerSun className="w-8 h-8 text-[#FFC107]" />
-            <span className="text-2xl font-bold text-white">28°C</span>
+            <span className="text-2xl font-bold text-white">{temperatureText}</span>
           </div>
           <h4 className="text-[#94a3b8] text-sm">Temperature</h4>
           <p className="text-xs text-[#4CAF50] mt-1">Optimal</p>
@@ -166,7 +242,7 @@ export default function MainDashboard() {
         <div className="bg-[#1E293B] rounded-2xl p-6 border border-white/10">
           <div className="flex items-center justify-between mb-4">
             <CloudRain className="w-8 h-8 text-[#06B6D4]" />
-            <span className="text-2xl font-bold text-white">65%</span>
+            <span className="text-2xl font-bold text-white">{humidityText}</span>
           </div>
           <h4 className="text-[#94a3b8] text-sm">Humidity</h4>
           <p className="text-xs text-[#4CAF50] mt-1">Normal</p>
@@ -175,7 +251,7 @@ export default function MainDashboard() {
         <div className="bg-[#1E293B] rounded-2xl p-6 border border-white/10">
           <div className="flex items-center justify-between mb-4">
             <Droplets className="w-8 h-8 text-[#4CAF50]" />
-            <span className="text-2xl font-bold text-white">Active</span>
+            <span className="text-2xl font-bold text-white">{pumpStatus}</span>
           </div>
           <h4 className="text-[#94a3b8] text-sm">Pump Status</h4>
           <p className="text-xs text-[#4CAF50] mt-1">Running</p>

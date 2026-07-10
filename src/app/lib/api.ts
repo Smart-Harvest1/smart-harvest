@@ -38,3 +38,31 @@ export async function fetchWithAuth(path: string, opts: RequestInit = {}) {
 export async function fetchStats() {
   return fetchWithAuth('/api/stats');
 }
+
+export async function fetchTelemetry() {
+  return fetchWithAuth('/api/telemetry');
+}
+
+export async function fetchUsers() {
+  return fetchWithAuth('/api/users');
+}
+
+export async function createUser(user: { fullName: string; email: string; password: string; role: string; status: string }) {
+  return fetchWithAuth('/api/users', {
+    method: 'POST',
+    body: JSON.stringify(user),
+  });
+}
+
+export async function updateUser(id: number, data: { fullName?: string; password?: string; role?: string; status?: string }) {
+  return fetchWithAuth(`/api/users/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(data),
+  });
+}
+
+export async function deleteUser(id: number) {
+  return fetchWithAuth(`/api/users/${id}`, {
+    method: 'DELETE',
+  });
+}

@@ -1,21 +1,16 @@
 import { Download, TrendingUp, Calendar, BarChart3, PieChart as PieChartIcon } from 'lucide-react';
 import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 
-const monthlyEnergy = [
-  { month: 'Jan', production: 850, consumption: 650 },
-  { month: 'Feb', production: 920, consumption: 680 },
-  { month: 'Mar', production: 1050, consumption: 720 },
-  { month: 'Apr', production: 1200, consumption: 780 },
-  { month: 'May', production: 1280, consumption: 800 },
-  { month: 'Jun', production: 1350, consumption: 820 },
-];
+const monthlyEnergy = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'].map((month, index) => {
+  const production = 800 + index * 90 + Math.sin(index / 1.2) * 30;
+  const consumption = 620 + index * 40 + Math.cos(index / 1.4) * 25;
+  return { month, production: Math.round(production), consumption: Math.round(consumption) };
+});
 
-const waterUsage = [
-  { week: 'W1', usage: 2500 },
-  { week: 'W2', usage: 2800 },
-  { week: 'W3', usage: 2400 },
-  { week: 'W4', usage: 2900 },
-];
+const waterUsage = ['W1', 'W2', 'W3', 'W4'].map((week, index) => ({
+  week,
+  usage: Math.round(2500 + index * 150 + Math.sin(index / 1.1) * 120),
+}));
 
 const cropPerformance = [
   { name: 'Tomatoes', value: 35, color: '#4CAF50' },
@@ -25,12 +20,22 @@ const cropPerformance = [
   { name: 'Other', value: 5, color: '#94a3b8' },
 ];
 
-const soilHealth = [
-  { date: 'W1', score: 85 },
-  { date: 'W2', score: 87 },
-  { date: 'W3', score: 90 },
-  { date: 'W4', score: 92 },
-];
+const soilHealth = ['W1', 'W2', 'W3', 'W4'].map((date, index) => ({
+  date,
+  score: 82 + index * 3 + Math.min(index * 2, 6),
+}));
+
+const totalProduction = monthlyEnergy.reduce((sum, item) => sum + item.production, 0);
+const totalConsumption = monthlyEnergy.reduce((sum, item) => sum + item.consumption, 0);
+const efficiencyScore = totalConsumption ? Math.min(100, Math.round((totalProduction / totalConsumption) * 100)) : 0;
+const lastMonth = monthlyEnergy[monthlyEnergy.length - 1];
+const previousMonth = monthlyEnergy[monthlyEnergy.length - 2] ?? monthlyEnergy[0];
+const energySaved = previousMonth.production ? Math.round(((lastMonth.production - previousMonth.production) / previousMonth.production) * 100) : 0;
+const averageWater = waterUsage.reduce((sum, item) => sum + item.usage, 0) / waterUsage.length;
+const waterSaved = Math.max(0, Math.round((1 - (waterUsage[waterUsage.length - 1].usage / Math.max(averageWater, 1))) * 100));
+const energyEfficiency = totalProduction + totalConsumption ? Math.min(100, Math.round((totalProduction / (totalProduction + totalConsumption)) * 100)) : 0;
+const waterEfficiency = Math.min(100, Math.round(100 - (waterUsage[waterUsage.length - 1].usage / Math.max(averageWater, 1)) * 100));
+const cropYield = Math.round(cropPerformance.reduce((sum, item) => sum + item.value, 0) / cropPerformance.length);
 
 export default function AnalyticsReports() {
   return (
@@ -50,22 +55,22 @@ export default function AnalyticsReports() {
         <div className="bg-gradient-to-br from-[#4CAF50]/20 to-[#4CAF50]/5 rounded-2xl p-6 border border-[#4CAF50]/30">
           <TrendingUp className="w-8 h-8 text-[#4CAF50] mb-3" />
           <h3 className="text-[#94a3b8] text-sm mb-1">Efficiency Score</h3>
-          <p className="text-3xl font-bold text-white">94%</p>
-          <p className="text-sm text-[#4CAF50] mt-1">+5% this month</p>
+          <p className="text-3xl font-bold text-white">{efficiencyScore}%</p>
+          <p className="text-sm text-[#4CAF50] mt-1">{energySaved > 0 ? `+${energySaved}% vs prior` : 'Stable'}</p>
         </div>
 
         <div className="bg-gradient-to-br from-[#FFC107]/20 to-[#FFC107]/5 rounded-2xl p-6 border border-[#FFC107]/30">
           <BarChart3 className="w-8 h-8 text-[#FFC107] mb-3" />
           <h3 className="text-[#94a3b8] text-sm mb-1">Energy Saved</h3>
-          <p className="text-3xl font-bold text-white">$240</p>
-          <p className="text-sm text-[#4CAF50] mt-1">This month</p>
+          <p className="text-3xl font-bold text-white">{energySaved >= 0 ? `+${energySaved}%` : `${energySaved}%`}</p>
+          <p className="text-sm text-[#4CAF50] mt-1">Based on last two months</p>
         </div>
 
         <div className="bg-gradient-to-br from-[#06B6D4]/20 to-[#06B6D4]/5 rounded-2xl p-6 border border-[#06B6D4]/30">
           <PieChartIcon className="w-8 h-8 text-[#06B6D4] mb-3" />
           <h3 className="text-[#94a3b8] text-sm mb-1">Water Saved</h3>
-          <p className="text-3xl font-bold text-white">15%</p>
-          <p className="text-sm text-[#4CAF50] mt-1">vs last month</p>
+          <p className="text-3xl font-bold text-white">{waterSaved}%</p>
+          <p className="text-sm text-[#4CAF50] mt-1">vs monthly average</p>
         </div>
 
         <div className="bg-gradient-to-br from-[#EF4444]/20 to-[#EF4444]/5 rounded-2xl p-6 border border-[#EF4444]/30">
@@ -181,23 +186,23 @@ export default function AnalyticsReports() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="bg-white/5 rounded-xl p-4">
             <p className="text-[#94a3b8] text-sm mb-1">Solar Efficiency</p>
-            <p className="text-2xl font-bold text-white mb-2">94.2%</p>
+            <p className="text-2xl font-bold text-white mb-2">{energyEfficiency}%</p>
             <div className="w-full bg-white/10 rounded-full h-2">
-              <div className="bg-gradient-to-r from-[#4CAF50] to-[#22C55E] h-2 rounded-full" style={{ width: '94%' }}></div>
+              <div className="bg-gradient-to-r from-[#4CAF50] to-[#22C55E] h-2 rounded-full" style={{ width: `${energyEfficiency}%` }}></div>
             </div>
           </div>
           <div className="bg-white/5 rounded-xl p-4">
             <p className="text-[#94a3b8] text-sm mb-1">Water Efficiency</p>
-            <p className="text-2xl font-bold text-white mb-2">88.5%</p>
+            <p className="text-2xl font-bold text-white mb-2">{waterEfficiency}%</p>
             <div className="w-full bg-white/10 rounded-full h-2">
-              <div className="bg-gradient-to-r from-[#06B6D4] to-[#0891B2] h-2 rounded-full" style={{ width: '88%' }}></div>
+              <div className="bg-gradient-to-r from-[#06B6D4] to-[#0891B2] h-2 rounded-full" style={{ width: `${waterEfficiency}%` }}></div>
             </div>
           </div>
           <div className="bg-white/5 rounded-xl p-4">
             <p className="text-[#94a3b8] text-sm mb-1">Crop Yield</p>
-            <p className="text-2xl font-bold text-white mb-2">92.0%</p>
+            <p className="text-2xl font-bold text-white mb-2">{cropYield}%</p>
             <div className="w-full bg-white/10 rounded-full h-2">
-              <div className="bg-gradient-to-r from-[#FFC107] to-[#FF9800] h-2 rounded-full" style={{ width: '92%' }}></div>
+              <div className="bg-gradient-to-r from-[#FFC107] to-[#FF9800] h-2 rounded-full" style={{ width: `${cropYield}%` }}></div>
             </div>
           </div>
           <div className="bg-white/5 rounded-xl p-4">
