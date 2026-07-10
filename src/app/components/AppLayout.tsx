@@ -63,7 +63,7 @@ export default function AppLayout() {
                 clearToken();
                 navigate('/login');
               }}
-              className="w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl text-white bg-red-600 hover:bg-red-700 transition-colors"
+                className="w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl text-white bg-gradient-to-r from-[#4CAF50] to-[#22C55E] hover:opacity-90 transition-colors"
             >
               Logout
             </button>
@@ -101,7 +101,7 @@ export default function AppLayout() {
                 clearToken();
                 navigate('/login');
               }}
-              className="text-sm text-white bg-red-600 hover:bg-red-700 px-3 py-1 rounded-md transition-colors"
+                className="text-sm text-white bg-gradient-to-r from-[#4CAF50] to-[#22C55E] hover:opacity-90 px-3 py-1 rounded-md transition-colors"
             >
               Logout
             </button>
